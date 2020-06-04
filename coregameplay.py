@@ -4,7 +4,7 @@ import random
 from pygame import display, event, image, transform
 import game_config as gc
 import threading
-from animals import Cow, Sheep, Animal, Action,  GameObject
+from animals import Cow, Sheep, Animal, Action, Chicken,  GameObject
 from player import maria
 
 pygame.init()
@@ -123,7 +123,7 @@ def game_loop():
         return col
 
     class Clocks:
-        def init(self, days, previous_time, hours):
+        def __init__(self, days, previous_time, hours):
             self.hours = hours
             self.days = days
             self.previous_time = previous_time
@@ -139,18 +139,22 @@ def game_loop():
         new_pic = transform.scale(new_pic, (gc.IMAGE_SIZE - gc.MARGIN, gc.IMAGE_SIZE - gc.MARGIN))
         screen.blit(new_pic, (col * gc.IMAGE_SIZE, row * gc.IMAGE_SIZE))
 
-    def stall(farm_obj, farm, x, y):  # set an animal to a place
-        farm.farm_tiles[(x, y)] = farm_obj
+    def stall(farm_obj, farm, row, col):  # set an animal to a place
+        farm.farm_tiles[(row, col)] = farm_obj
 
-    def choose(farm, x, y):
-        return farm.farm_tiles[(x, y)]
+    def choose(farm, row, col):
+        return farm.farm_tiles[(row, col)]
 
-    def draw_go(player, obj):
+    def convert_mouse_pos():
         mouse_x, mouse_y = pygame.mouse.get_pos()
         index = find_index(mouse_x, mouse_y)
         row = find_row(mouse_y)
         col = find_col(mouse_x)
-        player.stall(obj, farm_test, col, row)
+        return row, col
+
+    def draw_go(obj):
+        row, col = convert_mouse_pos()
+        stall(obj, farm_test, row, col)
         screen.blit(pic_load(obj), (col * gc.IMAGE_SIZE, row * gc.IMAGE_SIZE))
 
     class Shop():
@@ -165,11 +169,17 @@ def game_loop():
             cow = Cow()
             return cow
 
+        def buy_chicken(self):
+            chicken = Chicken()
+            return chicken
+
         def shopping(self, event):
             if event.key == pygame.K_w:
                 return shop.buy_cow()
-            elif event.key == pygame.K_a:
+            elif event.key == pygame.K_h:
                 return shop.buy_sheep()
+            elif event.key == pygame.K_z:
+                return shop.buy_chicken()
 
     act = Action()
     animal = Animal()
@@ -183,42 +193,34 @@ def game_loop():
         screen.blit(grass, (i[0] * gc.IMAGE_SIZE, i[1] * gc.IMAGE_SIZE))
     counter = 10
     pygame.time.set_timer(pygame.USEREVENT, 1000)
-    while running:
 
+    while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:  # Usually wise to be able to close your program.
                 raise SystemExit
             if event.type == pygame.KEYDOWN:
-                animal = shop.shopping(event)
-            animal_l = Animal()
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                mouse_x, mouse_y = pygame.mouse.get_pos()
-                index = find_index(mouse_x, mouse_y)
-                row = find_row(mouse_y)
-                col = find_col(mouse_x)
+                animal_local = shop.shopping(event)
+                if animal_local is not None:
+                    animal = animal_local
+
                 if animal is not None:
-                    maria.stall(animal, farm_test, col, row)
-                    screen.blit(pic_load(animal), (col * gc.IMAGE_SIZE, row * gc.IMAGE_SIZE))
-
-                animal_l = choose(farm_test, row, col)
-
-            if animal_l is not None:
-                if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_s:
-                        act.feed(animal_l)
+                        act.feed(animal)
                     elif event.key == pygame.K_d:
-                        act.get_product(animal_l)
+                        act.get_product(animal)
 
-                # elif animal is not None:
-                #     maria.stall(animal, farm_test, col, row)
-                #     screen.blit(pic_load(animal), (col * gc.IMAGE_SIZE, row * gc.IMAGE_SIZE))
-                #     continue
-                # else:
-                #     continue
-
-                # if animal.state == 'sleep':
-                #     timer = threading.Timer(5.0, change_pic, ['assets\cow_sleep.png'])
-                #     timer.start()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                row, col = convert_mouse_pos()
+                animal_local = choose(farm_test, row, col)
+                if animal_local is not None:
+                    animal = animal_local
+                if animal is not None:
+                    draw_go(animal)
+                    continue
+            if animal is not None:
+                if animal.state == 'sleep':
+                    timer = threading.Timer(5.0, change_pic, ['assets\cow_sleep.png'])
+                    timer.start()
 
         display.flip()
 
