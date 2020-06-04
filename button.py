@@ -13,7 +13,8 @@ class Button(ABC):
         self.surface=surface
 
     def draw(self):
-        self.surface.blit(self.but_pic_new, (self.left * gc.IMAGE_SIZE, self.top * gc.IMAGE_SIZE))
+        self.but_pic = transform.scale(self.but_pic, (gc.IMAGE_SIZE - gc.MARGIN, gc.IMAGE_SIZE - gc.MARGIN))
+        self.surface.blit(self.but_pic, (self.left, self.top))
         pygame.display.update()
 
     @abstractmethod
@@ -21,6 +22,7 @@ class Button(ABC):
         pass
 
 #class VegetableButton(Button):
+
 
 
 

@@ -2,6 +2,21 @@ from abc import ABC
 import pygame
 import game_config as gc
 
+class Shop:
+    def __init__(self, screen):
+        self.products={}
+        self.screen=screen
+        self.state=False
+    def product_dict(self, prod_name):
+        self.products[prod_name]=prod_name.price
+
+    def draw(self):
+        surf=pygame.Surface((384, 512))
+        self.screen.blit(surf, (0,0))
+        #for prod in [*self.products]:
+
+
+
 class Action(ABC):
     def plant(self, farm_obj):
         pass
@@ -10,13 +25,15 @@ class Action(ABC):
         pass
 
 class Vegetable(Action):
-    def __init__(self, name,price):
+    def __init__(self, name,price,x,y ):
         self.name=name
         self.water = 5
         self.product = 0
         self.price=price
         self.state='seed'
         self.ripen=pygame.USEREVENT+1
+        self.place_in_menu=(x,y)
+
     def water_plant(self, litreage):
         if (litreage==1):
             self.water+=1
@@ -59,7 +76,10 @@ class Player:
         self.money=0
 
     def plant(self, farm_obj, farm, x, y):
-        farm.farm_tiles[(x,y)]=farm_obj.name
+        if (x,y) in farm.farm_tiles:
+            farm.farm_tiles[(x,y)]=farm_obj.name
+        else:
+            pass
 
 class FarmField():
     def __init__(self, num):
@@ -79,7 +99,8 @@ class FarmTile(Action):
         self.obj=farm_obj.name
 
 adriana=Player('woman', 'adriana')
-tomato=Vegetable('tomato',15)
+tomato=Vegetable('tomato',15, 0,0)
+cucumber=Vegetable('cucumber', 20, 1, 0)
 tomato.water_plant(3)
 tomato.buy_vegetable(adriana)
 print(adriana.money)
@@ -89,4 +110,5 @@ for i in range(0, 3):
         farm_test.farm_tiles[i,j]=None
 print(farm_test.farm_tiles)
 
+products=[tomato, cucumber]
 
