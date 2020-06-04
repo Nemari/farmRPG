@@ -19,7 +19,7 @@ gameDisplay = pygame.display.set_mode((display_width, display_height))
 pygame.display.set_caption('FARM FAM')
 clock = pygame.time.Clock()
 
-menuImg = pygame.image.load('menu.jpg')
+menuImg = pygame.image.load('assets\menu.jpg')
 
 def things_dodged(count):
     font = pygame.font.SysFont(None, 25)

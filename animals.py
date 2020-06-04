@@ -1,88 +1,88 @@
 from abc import ABCMeta, abstractmethod, abstractproperty
 import random
-class Animal():
-    def __init__(self, name, amount, product, action):
-        self.name = name
-        self.amount = amount        #amount of animals
-        self.product = product      #product given by animal
-        self.action = action        #action you can do with animal
+import pygame
+import game_config as gc
+class Product():
 
+    def __init__(self, name, price, dim):
+        self.name = name
+        self.price = price
+        self.amount = 0
+        self.dim = dim
+
+class Milk(Product):
+    def __init__(self):
+        super().__init__(name = "Milk", price = 7, dim = "litres")
+
+
+
+class Egg(Product):
+    def __init__(self):
+        super().__init__(name="Egg", price=5, dim = "")
+
+
+class Wool(Product):
+    def __init__(self):
+        super().__init__(name="Wool", price=10, dim = "kilos")
+
+
+class Animal():
+    def __init__(self, name, action, product, price):
+        self.name = name
+        self.action = action        #action you can do with animal
+        self.price = price
+        self.state = 'set'
+        self.ripen = pygame.USEREVENT + 1
+        self.hunger = 0
+        self.product = Product(product.name, product.price, product.dim)
     def info(self):
         print("{} is an animal. It is in the amount of {}. It gives you {}.You can {} it.".format(self.name, self.amount, self.product, self.action))
+    def event1(self):
+        self.state='ready'
 
+    def event2(self):
+        self.state='sleep'
+
+    def getting_ready(self, time1, time2):
+        pygame.time.set_timer(self.event1(), int(time1))
+        pygame.time.set_timer(self.event2(), int(time2))
+
+    def buy_animal(self, player):
+        if (player.money>=self.price):
+            if (self.name in player.players_animals):
+                player.players_animals[self.name]+=1
+            else:
+                player.players_animals[self.name]=1
+            player.money-=self.price
+            print("You bought {}".format(self.name))
+        else:
+            print("You don't have enough money")
+    def get_product(self):
+        self.product.amount = random.randint(1, 10)
+        return self.product.amount
 
 class Action():
-    __metaclass__=ABCMeta
-    
-    @abstractmethod
-    def feed(self):
-        pass
 
-    @abstractmethod
-    def milk(self):
-        pass
+    def feed(self, animal):
+        animal.hunger += 1
+        print('Your {} is feed on {}'.format(animal.name, animal.hunger))
 
-    @abstractmethod
-    def pick_eggs(self):
-        pass
+    def get_product(self, animal):
+        animal.state = 'sleep'
+        print('Your {} gave you {} {} of {}!'.format(animal.name, animal.get_product(), animal.product.dim, animal.product.name))
+        return animal.product
 
-    @abstractmethod
-    def shear(self):
-        pass
 
-class Cow(Animal, Action):
+class Cow(Animal):
+    def __init__(self):
+        super().__init__(name="Cow", action="milk", price=10, product = Milk())
 
-    def __init__(self, name, amount, product, action, hunger, milk_amount):
-        super().__init__(name, amount, product, action)
-        self.hunger = hunger
-        self.milk_amount = milk_amount
+class Chicken(Animal):
+    def __init__(self):
+        super().__init__(name="Chicken", action="pick_eggs", price=3, product =Egg())
 
-    def feed(self):
-        self.hunger+=1
-        print('Your cow is feed on {}'.format(self.hunger))
+class Sheep(Animal):
+    def __init__(self):
+        super().__init__(name="Sheep", action="shear", price=5, product = Wool())
 
-    def milk(self):
-        self.milk_amount = random.randint(1, 10)
-        print('Your cow gave you {} liters of milk!'.format(self.milk_amount))
 
-class Chicken(Animal, Action):
-
-    def __init__(self, name, amount, product, action, hunger, egg_amount):
-        super().__init__(name, amount, product, action)
-        self.hunger = hunger
-        self.egg_amount = egg_amount
-
-    def feed(self):
-        self.hunger+=5
-        print('Your chicken is feed on {}'.format(self.hunger))
-
-    def pick_eggs(self):
-        self.egg_amount = random.randint(1, 5)
-        print('Your chicken gave you {} eggs!'.format(self.egg_amount))
-
-class Sheep(Animal, Action):
-    def __init__(self, name, amount, product, action, hunger, wool_amount):
-        super().__init__(name, amount, product, action)
-        self.hunger = hunger
-        self.wool_amount = wool_amount
-
-    def feed(self):
-        self.hunger+=5
-        print('Your sheep is feed on {}'.format(self.hunger))
-
-    def shear(self):
-        self.wool_amount = random.randint(10, 20)
-        print('Your sheep gave you {} kilos of wool!'.format(self.wool_amount))
-
-cow1= Cow('Cow', 1, 'milk', 'milk', 0, 0)
-cow1.info()
-cow1.feed()
-cow1.milk()
-chicken1 = Chicken('Chicken', 1, 'eggs', 'pick eggs from', 0, 0)
-chicken1.info()
-chicken1.feed()
-chicken1.pick_eggs()
-sheep1 = Sheep('Sheep', 1, 'wool', 'shear', 0,0)
-sheep1.info()
-sheep1.feed()
-sheep1.shear()
