@@ -7,8 +7,6 @@ class Shop:
         self.products={}
         self.screen=screen
         self.state=False
-    def product_dict(self, prod_name):
-        self.products[prod_name]=prod_name.price
 
     def draw(self):
         surf=pygame.Surface((384, 512))
@@ -24,17 +22,44 @@ class Action(ABC):
     def ripen_timer(self, time1, time2):
         pass
 
-class Vegetable(Action):
-    def __init__(self, name,price,x,y ):
-        self.name=name
+class GardenVagetables:
+    def __init__(self, type, product, price, water_needed):
+        self.type=type
         self.water = 5
-        self.product = 0
-        self.price=price
-        self.state='seed'
-        self.ripen=pygame.USEREVENT+1
-        self.place_in_menu=(x,y)
+        self.product = product
+        self.state = 'seed'
+        self.image = self.type + '.png'
+        self.sell_price=price
+        self.water_needed=water_needed
+        self.seed_image = self.type + '_seed.png'
 
-    def water_plant(self, litreage):
+class Tomatos(GardenVagetables):
+    def __init__(self,name):
+        super().__init__('tomato', 1, 20, 10)
+        self.name=name
+
+class Cucumbers(GardenVagetables):
+    def __init__(self, name):
+        super().__init__('cucumber', 1, 25, 12)
+        self.name=name
+
+class Carrots(GardenVagetables):
+    def __init__(self):
+        super().__init__('carrot', 1, 30, 13)
+
+tomato1=Tomatos('tomato')
+print(tomato1.type)
+
+class ShopVegetable(Action):
+    def __init__(self, name,price,x,y , garden_class):
+        self.name=name
+        self.garden_class=garden_class
+        self.price=price
+        self.place_in_menu=(x,y)
+        self.image=self.name+'.png'
+        self.seed_image=self.name+'_seed.png'
+
+    '''def water_plant(self, litreage):
         if (litreage==1):
             self.water+=1
         if (litreage==3):
@@ -62,7 +87,7 @@ class Vegetable(Action):
 
     def ripen(self, time1, time2):
         pygame.time.set_timer(self.event1(), int(time1))
-        pygame.time.set_timer(self.event2(), int(time2))
+        pygame.time.set_timer(self.event2(), int(time2))'''
 
 
 
@@ -76,8 +101,8 @@ class Player:
         self.money=0
 
     def plant(self, farm_obj, farm, x, y):
-        if (x,y) in farm.farm_tiles:
-            farm.farm_tiles[(x,y)]=farm_obj.name
+        if bool((x,y) in farm.farm_tiles) & bool(farm.farm_tiles[(x,y)] is None):
+            farm.farm_tiles[(x,y)]=farm_obj
         else:
             pass
 
@@ -96,13 +121,11 @@ class FarmTile(Action):
         self.obj=None
 
     def plant(self, farm_obj):
-        self.obj=farm_obj.name
+        self.obj=farm_obj
 
 adriana=Player('woman', 'adriana')
-tomato=Vegetable('tomato',15, 0,0)
-cucumber=Vegetable('cucumber', 20, 1, 0)
-tomato.water_plant(3)
-tomato.buy_vegetable(adriana)
+tomato=ShopVegetable('tomato',15, 0,0, Tomatos)
+cucumber=ShopVegetable('cucumber', 20, 1, 0, Cucumbers)
 print(adriana.money)
 farm_test=FarmField(3)
 for i in range(0, 3):
@@ -111,4 +134,6 @@ for i in range(0, 3):
 print(farm_test.farm_tiles)
 
 products=[tomato, cucumber]
-
+carrot=ShopVegetable('carrot', 10, 2,0, Carrots)
+carrot1=carrot.garden_class()
+print(carrot1.type)
