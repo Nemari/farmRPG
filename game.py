@@ -32,8 +32,8 @@ def find_col(x):
         return col
 
 
-tomato_pic=image.load('tomato_seed.png')
-tomato_pic=transform.scale(tomato_pic, (gc.IMAGE_SIZE-gc.MARGIN, gc.IMAGE_SIZE-gc.MARGIN) )
+#tomato_pic=image.load('tomato_seed.png')
+#tomato_pic=transform.scale(tomato_pic, (gc.IMAGE_SIZE-gc.MARGIN, gc.IMAGE_SIZE-gc.MARGIN) )
 
 
 class FarmGame:
@@ -42,7 +42,7 @@ class FarmGame:
         self.farm=farm
         self.name=display.set_caption('FArM')
         self.screen=display.set_mode((384,512))
-        self.soil=soil=image.load('SOIL.jpg')
+        self.soil=soil=image.load('assets\SOIL.jpg')
         self.soil_new = transform.scale(soil, (gc.IMAGE_SIZE - gc.MARGIN, gc.IMAGE_SIZE - gc.MARGIN))
         self.tiles=[*farm.farm_tiles]
         self.panel={'shop': (0, 384),
@@ -53,9 +53,9 @@ class FarmGame:
         self.clocks=Clocks(0, datetime.datetime.now(), 0)
         self.player=Player('man', 'john')
         self.RAIN=pygame.USEREVENT
-        self.ShopButton=ShopButton(0, 384, 'shop.png', self.screen, 'shop')
-        self.InfoButton = ShopButton(256, 384, 'farmer.png', self.screen, 'farmer')
-        self.WaterButton = ShopButton(128, 384, 'water.png', self.screen, 'farmer')
+        self.ShopButton=ShopButton(0, 384, 'assets\shop.png', self.screen, 'shop')
+        self.InfoButton = ShopButton(256, 384, 'assets\\farmer.png', self.screen, 'farmer')
+        self.WaterButton = ShopButton(128, 384, 'assets\water.png', self.screen, 'farmer')
         self.shop=Shop(self.screen)
         self.products=[tomato, cucumber, carrot]
         self.bought_product=None
@@ -142,7 +142,7 @@ class FarmGame:
                 if int(x[1]) < 20:
                     pass
                 else:
-                    self.screen.blit(image.load('shop.png'), (128 * gc.IMAGE_SIZE, 128 * gc.IMAGE_SIZE))
+                    self.screen.blit(image.load('assets\shop.png'), (128 * gc.IMAGE_SIZE, 128 * gc.IMAGE_SIZE))
                     print("works")
                     self.clocks.minutes += 1
                     self.clocks.previous_time = datetime.datetime.now()

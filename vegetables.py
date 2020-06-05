@@ -28,10 +28,10 @@ class GardenVagetables:
         self.water = 5
         self.product = product
         self.state = 'seed'
-        self.image = self.type + '.png'
+        self.image = "assets\{}.png".format(self.type)
         self.sell_price=price
         self.water_needed=water_needed
-        self.seed_image = self.type + '_seed.png'
+        self.seed_image = "assets\{}_seed.png".format(self.type)
 
 class Tomatos(GardenVagetables):
     def __init__(self,name):
@@ -56,8 +56,8 @@ class ShopVegetable(Action):
         self.garden_class=garden_class
         self.price=price
         self.place_in_menu=(x,y)
-        self.image=self.name+'.png'
-        self.seed_image=self.name+'_seed.png'
+        self.image="assets\{}.png".format(self.name)
+        self.seed_image="assets\{}_seed.png".format(self.name)
 
     '''def water_plant(self, litreage):
         if (litreage==1):
