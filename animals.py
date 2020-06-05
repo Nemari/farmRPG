@@ -67,19 +67,23 @@ class Animal(GameObject):
             print("You bought {}".format(self.name))
         else:
             print("You don't have enough money")
-    def get_product(self):
+    def get_product(self,player):
         self.product.amount = random.randint(1, 10)
+        player.money += self.product.price*self.product.amount
+
         return self.product.amount
 
 class Action():
 
     def feed(self, animal):
         animal.hunger += 1
+        animal.state = 'ready'
         print('Your {} is feed on {}'.format(animal.name, animal.hunger))
 
-    def get_product(self, animal):
+    def get_product(self, animal, player):
         animal.state = 'sleep'
-        print('Your {} gave you {} {} of {}!'.format(animal.name, animal.get_product(), animal.product.dim, animal.product.name))
+        print('Your {} gave you {} {} of {}!'.format(animal.name, animal.get_product(player=player), animal.product.dim, animal.product.name))
+        print ('Your money is', player.money)
         return animal.product
 
 

@@ -6,6 +6,10 @@ import game_config as gc
 import threading
 from animals import Cow, Sheep, Animal, Action, Chicken,  GameObject
 from player import maria
+import exceptions as ex
+from db import show_score, save
+ex.except_import()
+
 
 pygame.init()
 
@@ -198,7 +202,9 @@ def game_loop():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:  # Usually wise to be able to close your program.
                 raise SystemExit
+
             if event.type == pygame.KEYDOWN:
+
                 animal_local = shop.shopping(event)
                 if animal_local is not None:
                     animal = animal_local
@@ -207,7 +213,10 @@ def game_loop():
                     if event.key == pygame.K_s:
                         act.feed(animal)
                     elif event.key == pygame.K_d:
-                        act.get_product(animal)
+                        act.get_product(animal, maria)
+                    show_score(maria)
+                    save(maria)
+
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 row, col = convert_mouse_pos()
@@ -216,10 +225,14 @@ def game_loop():
                     animal = animal_local
                 if animal is not None:
                     draw_go(animal)
+
                     continue
             if animal is not None:
                 if animal.state == 'sleep':
                     timer = threading.Timer(5.0, change_pic, ['assets\cow_sleep.png'])
+                    timer.start()
+                elif animal.state == 'ready':
+                    timer = threading.Timer(3.0, change_pic, [animal.picture])
                     timer.start()
 
         display.flip()
